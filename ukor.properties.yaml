@@ -1,0 +1,11 @@
+name: ukor-sample-project
+version: 0.0.1
+buildDir: build
+sourceDir: src
+mainFlavor: main
+defaults:
+  flavor: main
+flavors:
+  main:
+    src:
+      - main
