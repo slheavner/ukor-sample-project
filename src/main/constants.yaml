@@ -1,0 +1,7 @@
+images:
+  selector: "pkg://assets/images/selector_wt.9.png"
+dimens:
+  grid:
+    position: "[190,50]"
+    basePosterSize: "[480,360]"
+    itemSpacing: "[50,50]"
