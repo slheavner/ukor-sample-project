@@ -72,6 +72,7 @@ function BaseTestSuite()
     this.assertAAHasKey                 = BTS__AssertAAHasKey
     this.assertAANotHasKey              = BTS__AssertAANotHasKey
     this.assertAAHasKeys                = BTS__AssertAAHasKeys
+    this.assertAAContains               = BTS__AssertAAContains
     this.assertAANotHasKeys             = BTS__AssertAANotHasKeys
     this.assertArrayContains            = BTS__AssertArrayContains
     this.assertArrayNotContains         = BTS__AssertArrayNotContains
@@ -347,6 +348,33 @@ Function BTS__AssertAAHasKeys(array as dynamic, keys as object, msg = "" as stri
             if not array.DoesExist(key)
                 if msg = ""
                     msg = "Array doesn't have the '" + key + "' key."
+                end if
+            return msg
+            end if
+        end for
+    else
+        msg = "Input value is not an Associative Array."
+        return msg
+    end if
+    return ""
+End Function
+
+'----------------------------------------------------------------
+' Fail if the AA doesn't contain equal values
+'
+' @param expected (object) AA with expected key:value's.
+' @param actual (object) AA to test against.
+' @param msg (string) An error message.
+' Default value: ""
+'
+' @return An error message.
+'----------------------------------------------------------------
+Function BTS__AssertAAContains(expected as object, actual as object, msg = "" as string) as string
+    if TF_Utils__IsAssociativeArray(expected) and TF_Utils__IsAssociativeArray(actual)
+        for each key in expected
+            if not actual[key] = expected[key]
+                if msg = ""
+                    msg = "AssociativeArray doesn't contain '" + key + ":" + expected[key] + "'"
                 end if
             return msg
             end if
@@ -966,9 +994,10 @@ function Logger() as Object
     ' Interface
     this.SetVerbosity           = Logger__SetVerbosity
     this.SetEcho                = Logger__SetEcho
-    this.SetServerURL           = Logger__SetServerURL
     this.PrintStatistic         = Logger__PrintStatistic
     this.SendToServer           = Logger__SendToServer
+    this.SetServer              = Logger__SetServer
+    this.SetServerURL           = Logger__SetServerURL
 
     this.CreateTotalStatistic   = Logger__CreateTotalStatistic
     this.CreateSuiteStatistic   = Logger__CreateSuiteStatistic
@@ -1040,12 +1069,12 @@ end sub
 ' @param port (string) port for url.
 ' Default level: invalid
 '----------------------------------------------------------------
-sub Logger__SetServer(host = invalid as String, port = invalid as String)
+sub Logger__SetServer(host = invalid as String, port = invalid as String, protocol = "http")
     if host <> invalid
         if port <> invalid
-          m.serverURL = "http://" + host + ":" + port
+          m.serverURL = protocol + "://" + host + ":" + port
         else
-          m.serverURL = "http://" + host
+          m.serverURL = protocol + "://" + host
         end if
     end if
 end sub
@@ -1062,7 +1091,7 @@ sub Logger__SendToServer(statObj as Object)
       request = CreateObject("roUrlTransfer")
       request.SetUrl(m.serverURL)
       statString = FormatJson(statObj)
-      ? "Response: "; request.postFromString(statString)    
+      ? "Response: "; request.postFromString(statString)
     end if
 end sub
 
